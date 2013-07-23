@@ -74,13 +74,11 @@ all_candidates() -> array:from_list(lists:seq(1,upper_limit())).
 list_all_abundants() -> list(abundant, upper_limit()).
 
 % Generates a list of all sums of abundant numbers from 1 to upper limit.
-% Does not include sums that exceed the upper limit and does not filter
-% the duplicates in the current implementation.
+% Does not include sums that exceed the upper limit.
 list_all_sums_of_abundants() -> list_sums(list_all_abundants(), upper_limit()).
 
 % Generates a list of sums of elements from the given list not exceeding the upper bound.
-% Does not filter duplicates
-list_sums(List, UpperBound) -> [A+B || A <- List, B <- List, A+B =< UpperBound].
+list_sums(List, UpperBound) -> [A+B || A <- List, B <- List, A =< B, A+B =< UpperBound].
 
 % Zeroes elements representible by a sum of two abundant numbers from the all_candidates array
 array_not_representible() -> zero_entries_from_list(all_candidates(), list_all_sums_of_abundants()).
@@ -132,5 +130,12 @@ list(Type, Limit) ->
 
 %=== BENCHMARK
 benchmark() ->
+
+	{AbGenTime, _} = timer:tc(?MODULE, list_all_abundants, []),
+	io:format("list_all_abundants: ~p ms~n", [AbGenTime/1000]),
+
+	{AbSumGenTime, _} = timer:tc(?MODULE, list_all_sums_of_abundants, []),
+	io:format("list_all_sums_of_abundants: ~p ms~n", [AbSumGenTime/1000]),
+
     {S1Time, S1Result} = timer:tc(?MODULE, solve, []),
     io:format("solve: ~p (~p ms)~n", [S1Result, S1Time/1000]).
