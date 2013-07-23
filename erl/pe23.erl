@@ -58,7 +58,7 @@
 % as a sum of abundants in a certain array. The last step is to count
 % the sum of the remaining array elements.
 %
-% This methods performs in shortly under a minute on my Mac, so it is 
+% This methods performs in roughly a half minute on my Mac, so it is 
 % obviously not optimized enough. Will have to work on it later to improve
 % the performance.
 solve() -> sum_not_representible().
@@ -97,11 +97,13 @@ list_not_representible() -> [X || X <- array:to_list(array_not_representible()),
 
 % Returns the sum of proper divisors for a given number
 sum_divisors(1) -> 0;
-sum_divisors(N) -> 1 + sum_divisors_iterate(N, 2, N-1).
+sum_divisors(N) -> 1 + sum_divisors_iterate(N, 2, math:sqrt(N)).
 
-sum_divisors_iterate(_, I, Max) when I >= Max -> 0;
-sum_divisors_iterate(N, I, Max) when N rem I == 0 -> I + sum_divisors_iterate(N, I+1, Max);
+sum_divisors_iterate(_, I, Max) when I > Max -> 0;
+sum_divisors_iterate(N, I, Max) when N rem I == 0, N div I == I -> I           + sum_divisors_iterate(N, I+1, Max);
+sum_divisors_iterate(N, I, Max) when N rem I == 0               -> I + N div I + sum_divisors_iterate(N, I+1, Max);
 sum_divisors_iterate(N, I, Max) -> sum_divisors_iterate(N, I+1, Max).
+
 
 
 % Individual classification functions, were used for debugging
