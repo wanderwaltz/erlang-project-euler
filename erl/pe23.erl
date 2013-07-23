@@ -14,7 +14,8 @@
 	     array_not_representible/0,
 	     all_candidates/0,
 	     sum_not_representible/0,
-	     list_not_representible/0]).
+	     list_not_representible/0,
+	     zero_entries_from_list/2]).
 
 
 % A perfect number is a number for which the sum of its proper divisors
@@ -58,7 +59,7 @@
 % as a sum of abundants in a certain array. The last step is to count
 % the sum of the remaining array elements.
 %
-% This methods performs in roughly a half minute on my Mac, so it is 
+% This methods performs in roughly a quarter of a minute on my Mac, so it is 
 % obviously not optimized enough. Will have to work on it later to improve
 % the performance.
 solve() -> sum_not_representible().
@@ -92,6 +93,7 @@ zero_entries_from_list(Array, [X|List]) -> zero_entries_from_list(array:set(X-1,
 
 % Converts array_not_representible to a list filtering out zero entries (used for debugging)
 list_not_representible() -> [X || X <- array:to_list(array_not_representible()), X > 0].
+
 
 % Returns the sum of proper divisors for a given number
 sum_divisors(1) -> 0;
@@ -131,11 +133,23 @@ list(Type, Limit) ->
 %=== BENCHMARK
 benchmark() ->
 
-	{AbGenTime, _} = timer:tc(?MODULE, list_all_abundants, []),
-	io:format("list_all_abundants: ~p ms~n", [AbGenTime/1000]),
+	io:format("Profiling indiviual steps of the straightforward algorithm:~n",[]),
 
-	{AbSumGenTime, _} = timer:tc(?MODULE, list_all_sums_of_abundants, []),
-	io:format("list_all_sums_of_abundants: ~p ms~n", [AbSumGenTime/1000]),
+	UpperBound = upper_limit(),
+
+	{AbGenTime, AllAbundants} = timer:tc(?MODULE, list_all_abundants, []),
+	io:format("list_all_abundants: ~p ms, list length: ~p~n", [AbGenTime/1000, length(AllAbundants)]),
+
+	{AbSumGenTime, AllSumsOfAbundants} = timer:tc(?MODULE, list_sums, [AllAbundants, UpperBound]),
+	io:format("list_sums(AllAbundants, UpperBound): ~p ms, list length: ~p~n", [AbSumGenTime/1000, length(AllSumsOfAbundants)]),
+
+	{AllCandidatesGenTime, AllCandidates} = timer:tc(?MODULE, all_candidates, []),
+	io:format("all_candidates: ~p ms~n", [AllCandidatesGenTime/1000]),
+
+	{ZeroCandidatesTime, _} = timer:tc(?MODULE, zero_entries_from_list, [AllCandidates, AllSumsOfAbundants]),
+	io:format("zero_entries_from_list: ~p ms~n", [ZeroCandidatesTime/1000]),
+
+	io:format("Profiling the straightforward algorithm as a whole:~n", []),
 
     {S1Time, S1Result} = timer:tc(?MODULE, solve, []),
     io:format("solve: ~p (~p ms)~n", [S1Result, S1Time/1000]).
