@@ -1,7 +1,7 @@
 -module(pe1).
 -export([solve_oneline/0, solve_simple/0, benchmark/0]).
 
-% If we list all the natural numbers below 10 that are multiples of 
+% If we list all the natural numbers below 10 that are multiples of
 % 3 or 5, we get 3, 5, 6 and 9. The sum of these multiples is 23.
 % Find the sum of all the multiples of 3 or 5 below 1000.
 %--------------------------
@@ -18,8 +18,8 @@ solve_oneline() -> lists:sum([X || X <- lists:seq(3,999), (X rem 3 == 0) or (X r
 
 
 %=== SIMPLE SOLUTION
-% The sum function does count the desired sum in a 
-% pretty much straightforward way, but includes 
+% The sum function does count the desired sum in a
+% pretty much straightforward way, but includes
 % the N value itself.
 % So we subtract 1000 from the result when computing the solution.
 solve_simple() -> sum(1000)-1000.
